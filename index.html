@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillSwap - Peer-to-Peer Learning Network</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-[#090d16] text-slate-100 min-h-screen font-['Plus_Jakarta_Sans'] flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+  <!-- Navigation Bar -->
+  <header class="border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-indigo-500/25">
+          ⇄
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">SkillSwap</span>
+            <span class="text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">Team Infinite Loop</span>
+          </div>
+          <p class="text-[11px] text-slate-400 hidden sm:block">Learn by Teaching • P2P Skill Barter Network</p>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex items-center gap-1.5 sm:gap-2">
+        <button onclick="switchTab('matches')" id="tab-matches" class="tab-button active-tab">Direct Matches</button>
+        <button onclick="switchTab('threeway')" id="tab-threeway" class="tab-button relative">
+          3-Way Loops
+          <span class="absolute -top-1 -right-1 flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+          </span>
+        </button>
+        <button onclick="switchTab('requests')" id="tab-requests" class="tab-button relative">
+          Requests
+          <span id="requests-badge" class="ml-1 text-[10px] bg-rose-500 text-white font-extrabold px-1.5 py-0.2 rounded-full">2</span>
+        </button>
+        <button onclick="switchTab('history')" id="tab-history" class="tab-button">Session History</button>
+        <button onclick="switchTab('insights')" id="tab-insights" class="tab-button">Demand Insights</button>
+        <button onclick="switchTab('profile')" id="tab-profile" class="tab-button">My Profile</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Body -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full space-y-8">
+
+    <!-- Active User Status Card & Completeness Tracker -->
+    <div class="glass-card p-6 rounded-2xl relative overflow-hidden border border-slate-800">
+      <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+        <div>
+          <div class="flex items-center gap-3">
+            <h2 class="text-2xl font-bold text-white flex items-center gap-2" id="user-display-name">
+              Adarsh
+            </h2>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Active Trader
+            </span>
+          </div>
+          <div class="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs sm:text-sm text-slate-400 mt-2">
+            <span>📚 <strong class="text-slate-300">Teaching:</strong> <span class="text-indigo-400 font-semibold" id="user-display-offers">JavaScript (Expert), Python (Intermediate)</span></span>
+            <span>🎯 <strong class="text-slate-300">Learning:</strong> <span class="text-purple-400 font-semibold" id="user-display-wants">UI Design (Beginner), Docker (Beginner)</span></span>
+            <span>🕒 <strong class="text-slate-300">Availability:</strong> <span class="text-slate-300" id="user-display-avail">Weekdays 6 PM - 8 PM</span></span>
+          </div>
+        </div>
+
+        <!-- Live Metrics & Completeness Progress -->
+        <div class="flex items-center gap-6 self-start lg:self-auto">
+          <div class="text-right hidden sm:block border-r border-slate-800 pr-6">
+            <div class="text-xs text-slate-400">Total Barter Hours</div>
+            <div class="text-base font-extrabold text-white mt-0.5">
+              <span class="text-emerald-400" id="stat-taught-hrs">16 hrs</span> taught • <span class="text-indigo-400" id="stat-learned-hrs">12 hrs</span> learned
+            </div>
+          </div>
+          
+          <div class="w-52">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-slate-400 font-medium">Profile Completeness</span>
+              <span class="text-indigo-400 font-bold" id="profile-percent">88%</span>
+            </div>
+            <div class="w-full bg-slate-800/80 rounded-full h-2.5 overflow-hidden p-0.5">
+              <div id="profile-bar" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-1.5 rounded-full transition-all duration-700" style="width: 88%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 1: DIRECT MATCHES (MUTUAL & ONE-WAY) -->
+    <section id="sec-matches" class="space-y-8">
+      <!-- Search & Level Filter Bar -->
+      <div class="flex flex-col md:flex-row gap-4 justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
+        <div class="relative w-full md:w-96">
+          <input type="text" id="filter-input" onkeyup="filterPeers()" placeholder="Search peers by skill (e.g., JavaScript, Docker)..." class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-2 text-xs text-slate-200 outline-none transition">
+        </div>
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <select id="level-filter" onchange="filterPeers()" class="bg-slate-950 border border-slate-800 text-xs rounded-xl px-3 py-2 text-slate-300 focus:border-indigo-500 outline-none">
+            <option value="all">All Skill Levels</option>
+            <option value="Expert">Expert Level</option>
+            <option value="Intermediate">Intermediate Level</option>
+            <option value="Beginner">Beginner Level</option>
+          </select>
+          <span class="text-xs text-slate-400 whitespace-nowrap" id="match-summary-count">Calculated Pairs</span>
+        </div>
+      </div>
+
+      <!-- Mutual Matches -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <span>🤝 Mutual Matches (Direct Swaps)</span>
+              <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20 font-semibold" id="mutual-count-tag">0 Matches</span>
+            </h3>
+            <p class="text-xs text-slate-400">Two-way fit: Both students teach what each other is eager to learn.</p>
+          </div>
+          <div class="text-xs text-slate-400 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 hidden sm:block">
+            Threshold: <strong class="text-emerald-400">>80% Fit</strong>
+          </div>
+        </div>
+        <div id="mutual-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+
+      <!-- One-Way Mentors Section -->
+      <div class="space-y-4 pt-4 border-t border-slate-800/80">
+        <div>
+          <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+            <span>🎯 One-Way Mentors (Can Teach You)</span>
+            <span class="text-xs bg-indigo-500/10 text-indigo-400 px-2 py-0.5 rounded border border-indigo-500/20 font-semibold">Learn-Only</span>
+          </h3>
+          <p class="text-xs text-slate-400">Students who offer the exact skills you want, even if you can't teach them back directly[cite: 1].</p>
+        </div>
+        <div id="oneway-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: 3-WAY LOOP SWAPS -->
+    <section id="sec-threeway" class="hidden space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-2">
+          <h3 class="text-xl font-bold text-amber-400">🔄 Algorithmic Three-Way Swap Loop</h3>
+          <span class="bg-amber-400/10 text-amber-300 text-[11px] font-bold px-2 py-0.5 rounded-full border border-amber-400/30 uppercase tracking-wider">X-Factor</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">Direct matches are limited by supply[cite: 1]. When two users don't directly match, our circular engine constructs a cyclic chain (A teaches B, B teaches C, and C teaches A)[cite: 1]!</p>
+      </div>
+
+      <div class="glass-card p-6 rounded-2xl border border-amber-500/20 bg-gradient-to-b from-amber-500/5 to-transparent">
+        <div class="flex justify-between items-center mb-6">
+          <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span> Active Loop Solution Identified
+          </h4>
+          <span class="text-xs bg-slate-900 border border-slate-800 text-slate-300 px-3 py-1 rounded-lg">100% Demand Satisfaction</span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+          <!-- Step 1 -->
+          <div class="bg-slate-900/90 border border-slate-800 p-5 rounded-xl text-center space-y-2 relative shadow-lg">
+            <span class="absolute -top-3 left-4 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">Node 1</span>
+            <div class="w-12 h-12 mx-auto rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center font-bold text-indigo-300">You</div>
+            <h5 class="font-bold text-white text-sm" id="loop-user-1">Adarsh (Infinite Loop)</h5>
+            <div class="text-xs text-slate-400">Teaches <strong class="text-emerald-400">JavaScript</strong> to</div>
+            <div class="text-indigo-400 font-semibold text-xs">Aman Sharma ➔</div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="bg-slate-900/90 border border-slate-800 p-5 rounded-xl text-center space-y-2 relative shadow-lg">
+            <span class="absolute -top-3 left-4 bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">Node 2</span>
+            <div class="w-12 h-12 mx-auto rounded-full bg-purple-500/20 border border-purple-500/40 flex items-center justify-center font-bold text-purple-300">AS</div>
+            <h5 class="font-bold text-white text-sm">Aman Sharma</h5>
+            <div class="text-xs text-slate-400">Teaches <strong class="text-emerald-400">UI Design</strong> to</div>
+            <div class="text-purple-400 font-semibold text-xs">Pooja Verma ➔</div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="bg-slate-900/90 border border-slate-800 p-5 rounded-xl text-center space-y-2 relative shadow-lg">
+            <span class="absolute -top-3 left-4 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">Node 3</span>
+            <div class="w-12 h-12 mx-auto rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center font-bold text-emerald-300">PV</div>
+            <h5 class="font-bold text-white text-sm">Pooja Verma</h5>
+            <div class="text-xs text-slate-400">Teaches <strong class="text-emerald-400">Docker</strong> back to</div>
+            <div class="text-emerald-400 font-semibold text-xs">Adarsh (Cycle Closed!) ↺</div>
+          </div>
+        </div>
+
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div>
+            <div class="text-sm font-semibold text-white">Status: <span class="text-emerald-400 font-bold">Consensus Verified</span></div>
+            <div class="text-xs text-slate-400">All 3 participants have compatible weekday evening time slots[cite: 1].</div>
+          </div>
+          <button onclick="lockThreeWaySwap()" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/25">
+            Confirm 3-Way Exchange
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: SESSION REQUESTS (ACCEPT / DECLINE) -->
+    <section id="sec-requests" class="hidden space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <h3 class="text-xl font-bold text-white">📬 Incoming & Outgoing Swap Requests</h3>
+        <p class="text-xs text-slate-400">Manage barter session proposals, confirm times, or decline requests[cite: 1].</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="session-requests-container"></div>
+    </section>
+
+    <!-- TAB 4: SESSION HISTORY & PAST TRADES -->
+    <section id="sec-history" class="hidden space-y-6">
+      <div class="border-b border-slate-800 pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+        <div>
+          <h3 class="text-xl font-bold text-white">📜 Session History & Verified Log</h3>
+          <p class="text-xs text-slate-400">Auditable log of completed trade hours and peer ratings[cite: 1].</p>
+        </div>
+        <button onclick="openReviewModal('Aman Sharma')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition">
+          + Rate a Peer
+        </button>
+      </div>
+
+      <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-900/90 text-slate-400 border-b border-slate-800 uppercase text-[10px] tracking-wider">
+            <tr>
+              <th class="p-4">Peer Student</th>
+              <th class="p-4">Exchange Topic</th>
+              <th class="p-4">Duration</th>
+              <th class="p-4">Type</th>
+              <th class="p-4">Peer Rating</th>
+              <th class="p-4">Status</th>
+            </tr>
+          </thead>
+          <tbody id="history-table-body" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 5: DEMAND INSIGHTS -->
+    <section id="sec-insights" class="hidden space-y-6">
+      <div class="border-b border-slate-800 pb-4">
+        <h3 class="text-xl font-bold text-white">📊 Campus Skill Market Liquidity</h3>
+        <p class="text-xs text-slate-400">Macro view: What students want to learn vs what they can teach across campus[cite: 1].</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="insights-container"></div>
+    </section>
+
+    <!-- TAB 6: MY PROFILE -->
+    <section id="sec-profile" class="hidden max-w-2xl mx-auto space-y-6">
+      <div class="glass-card p-6 rounded-2xl border border-slate-800">
+        <h3 class="text-lg font-bold text-white mb-1">Update Your Profile & Skills</h3>
+        <p class="text-xs text-slate-400 mb-6">Updating your skills automatically re-computes all match percentages in real-time[cite: 1].</p>
+
+        <form onsubmit="handleProfileUpdate(event)" class="space-y-4 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Full Name</label>
+            <input type="text" id="inp-name" value="Adarsh (Team Infinite Loop)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 outline-none focus:border-indigo-500">
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Skills You Offer (Format: Skill:Level, comma separated)[cite: 1]</label>
+            <input type="text" id="inp-offers" value="JavaScript:Expert, Python:Intermediate" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 outline-none focus:border-indigo-500">
+            <span class="text-[10px] text-slate-500">Mark level as Beginner, Intermediate, or Expert[cite: 1]</span>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Skills You Want to Learn (Format: Skill:Level, comma separated)[cite: 1]</label>
+            <input type="text" id="inp-wants" value="UI Design:Beginner, Docker:Beginner" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 outline-none focus:border-indigo-500">
+            <span class="text-[10px] text-slate-500">Mark level as Beginner, Intermediate, or Expert[cite: 1]</span>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Availability (Days & Times)[cite: 1]</label>
+            <input type="text" id="inp-avail" value="Weekdays 6 PM - 8 PM" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-200 outline-none focus:border-indigo-500">
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-white transition text-xs tracking-wider uppercase shadow-lg shadow-indigo-600/30">
+              Save Profile & Recalculate Matches
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL 1: REQUEST SESSION MODAL -->
+  <div id="booking-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div>
+          <h4 class="font-bold text-white text-base" id="modal-title">Request Skill Trade</h4>
+          <p class="text-xs text-slate-400">Propose mutual barter terms[cite: 1]</p>
+        </div>
+        <button onclick="closeModal('booking-modal')" class="text-slate-400 hover:text-white text-sm">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">Preferred Slot (Date & Time)[cite: 1]</label>
+          <input type="datetime-local" id="book-date" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-200 outline-none focus:border-indigo-500">
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">Session Agenda & Topics to Trade[cite: 1]</label>
+          <input type="text" id="book-topic" placeholder="e.g., 30m async JavaScript logic for 30m UI wireframing" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-200 outline-none focus:border-indigo-500">
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="confirmBooking()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition">
+          Send Barter Request
+        </button>
+        <button onclick="closeModal('booking-modal')" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs transition">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: PEER RATING MODAL (ADD-ON) -->
+  <div id="review-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div>
+          <h4 class="font-bold text-white text-base">Rate Your Learning Partner</h4>
+          <p class="text-xs text-slate-400" id="review-target-name">Review Session[cite: 1]</p>
+        </div>
+        <button onclick="closeModal('review-modal')" class="text-slate-400 hover:text-white text-sm">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">Star Rating (1 to 5)[cite: 1]</label>
+          <select id="review-stars" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-amber-400 outline-none focus:border-indigo-500 font-bold">
+            <option value="5">★★★★★ (5.0 Excellent Mentor)</option>
+            <option value="4">★★★★☆ (4.0 Very Good)</option>
+            <option value="3">★★★☆☆ (3.0 Decent)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-slate-400 mb-1">Feedback & Teaching Clarity[cite: 1]</label>
+          <textarea id="review-text" rows="3" placeholder="Explain how clearly they taught the concepts..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-200 outline-none focus:border-indigo-500"></textarea>
+        </div>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button onclick="submitReview()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition">
+          Submit Rating
+        </button>
+        <button onclick="closeModal('review-modal')" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs transition">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-indigo-600 text-white px-4 py-3 rounded-xl text-xs font-semibold shadow-2xl translate-y-20 opacity-0 transition-all duration-300 z-50">
+    Notification
+  </div>
+
+  <footer class="border-t border-slate-900 py-4 text-center text-xs text-slate-500">
+    SkillSwap • Built for Hackathon Excellence by Team Infinite Loop
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
